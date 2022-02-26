@@ -2,6 +2,7 @@ package puzzle.jewel;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
 import haxe.display.Display.Package;
 
 class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
@@ -12,6 +13,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	var comboMatch:Int;
 	var numQuids:Int;
 	var fallOffset:Float;
+	var shuffleButton:JewelShuffleButton;
 
 	public function new() {
 		super();
@@ -32,18 +34,31 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		numQuids = 6;
 		super.setupInitial();
 		setGridSize(8, 8);
+		shuffleButton = new JewelShuffleButton(300, gridToPixY(gridHeight), this);
+		add(shuffleButton);
 		fillWithNewBlocks();
-		scramble();
 	}
 
-	override function scramble() {
+	@:deprecated
+	function scramble() {
 		randomizeQuidsSimple(numQuids);
 		var failsafe:Int = 0;
-		while (getAllMatches().length > 0 && failsafe < 14) {
+		while (getAllMatches().length > 0 && failsafe < 69) {
 			failsafe++;
 			randomizeQuidsSimple(numQuids);
 		}
-		trace(failsafe);
+		trace("retries: " + failsafe);
+	}
+
+	public function maybeShuffle() {
+		if (!waitingForPiece) {
+			shuffle();
+		}
+	}
+
+	function shuffle() {
+		clearAllBlocks();
+		fillWithNewBlocks();
 	}
 
 	override function newBlock() {
@@ -96,7 +111,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		var matches:Array<JewelPuzzleMatch> = getAllMatches();
 		if (matches.length > 0) {
 			for (match in matches) {
-				scorePoints(match.getScore());
+				scorePoints(match.getScore(), match.getLocation());
 				comboMatch += 1;
 				for (blim in match) {
 					removeBlock(blim);
@@ -207,6 +222,21 @@ class JewelSelector extends FlxSprite {
 @:forward
 abstract JewelPuzzleMatch(Array<JewelBlock>) from Array<JewelBlock> to Array<JewelBlock> {
 	public function getScore():Int {
-		return this.length * 300 - 800;
+		switch (this.length) {
+			case 3: return 100;
+			case 4: return 500;
+			case 5: return 1000;
+			default: return this.length < 3 ? 0 : 5000;
+		}
+	}
+
+	public function getLocation():FlxPoint {
+		var x:Float = 0;
+		var y:Float = 0;
+		for (lem in this) {
+			x += lem.x;
+			y += lem.y;
+		}
+		return new FlxPoint(x/this.length+this[0].width/2, y/this.length+this[0].height/2);
 	}
 }

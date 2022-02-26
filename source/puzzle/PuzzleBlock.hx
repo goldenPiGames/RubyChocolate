@@ -2,6 +2,7 @@ package puzzle;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import haxe.exceptions.NotImplementedException;
 import puzzle.BlockGridPuzzle;
 
 class PuzzleBlock extends FlxSprite {
@@ -22,14 +23,7 @@ class PuzzleBlock extends FlxSprite {
 	}
 
 	function loadSprites() {
-		loadGraphic("assets/images/Blocks.png", true, 64, 64);
-		animation.add("quid0", [0]);
-		animation.add("quid1", [1]);
-		animation.add("quid2", [2]);
-		animation.add("quid3", [3]);
-		animation.add("quid4", [4]);
-		animation.add("quid5", [5]);
-		animation.add("quid6", [6]);
+		throw new NotImplementedException();
 	}
 
 	public override function update(elapsed:Float) {
@@ -101,7 +95,13 @@ class PuzzleBlock extends FlxSprite {
 		return "("+gridX+","+gridY+":"+quid+")";
 	}
 
+	/** Called when this block is removed due to being matched. */
 	public function eliminate():Void {
+		exists = false;
+	}
+
+	/** Called when this block is removed due to the board being shuffled. */
+	public function clear():Void {
 		exists = false;
 	}
 }

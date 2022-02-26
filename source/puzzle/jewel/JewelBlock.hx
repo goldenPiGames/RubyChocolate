@@ -3,6 +3,17 @@ package puzzle.jewel;
 class JewelBlock extends PuzzleBlock {
 	var parentSpec:JewelPuzzle;
 
+	override function loadSprites() {
+		loadGraphic("assets/images/Jewels.png", true, 64, 64);
+		animation.add("quid0", [0]);
+		animation.add("quid1", [1]);
+		animation.add("quid2", [2]);
+		animation.add("quid3", [3]);
+		animation.add("quid4", [4]);
+		animation.add("quid5", [5]);
+		animation.add("quid6", [6]);
+	}
+
 	public function setParentSpec(theparent:JewelPuzzle) {
 		parentSpec = theparent;
 	}

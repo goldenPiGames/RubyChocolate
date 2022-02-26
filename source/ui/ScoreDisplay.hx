@@ -1,5 +1,6 @@
-package gameui;
+package ui;
 
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 
 class ScoreDisplay extends FlxText {
@@ -10,5 +11,9 @@ class ScoreDisplay extends FlxText {
 
 	public function setScore(to:Int):Void {
 		text = Std.string(to);
+	}
+
+	public function defaultFloaterPosition():FlxPoint {
+		return getMidpoint();
 	}
 }

@@ -1,11 +1,10 @@
 package puzzle;
 
-import flixel.FlxBasic;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxRandom;
+import misc.PrxTypedGroup;
 
 class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
-	var blocks:FlxTypedGroup<BlockType>;
+	var blocks:PrxTypedGroup<BlockType>;
 	var blocksByGrid:Array<BlockType>;
 	var clickBuffer:Bool;
 
@@ -28,7 +27,6 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 
 	function insertIntoGrid(block:BlockType, a:Int, b:Int) {
 		blocks.add(block);
-		setBlockParent(block);
 		block.setGridPosition(a, b);
 		blocksByGrid[getIndexByGrid(a, b)] = block;
 	}
@@ -63,12 +61,15 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 	}
 	
 	function getBlock():BlockType {
-		var recycled = blocks.getFirstAvailable();
-		if (recycled != null) {
-			recycled.exists = true;
-			return recycled;
-		} else
-			return newBlock();
+		var dasboxen = blocks.getFirstAvailable();
+		if (dasboxen != null) {
+			dasboxen.exists = true;
+			return dasboxen;
+		} else {
+			dasboxen = newBlock();
+			setBlockParent(dasboxen);
+			return dasboxen;
+		}
 	}
 
 	function newBlock():BlockType {
@@ -114,7 +115,8 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 	function fillWithNewBlocks() {
 		for (i in 0...gridWidth) {
 			for (j in 0...gridHeight) {
-				insertIntoGrid(newBlock(), i, j);
+				fillInAt(i, j);
+				//insertIntoGrid(newBlock(), i, j);
 			}
 		}
 	}
@@ -140,5 +142,10 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 			}
 		}
 		return -1;
+	}
+
+	function clearAllBlocks():Void {
+		blocksByGrid = new Array<BlockType>();
+		blocks.forEachExists(b->b.clear());
 	}
 }
