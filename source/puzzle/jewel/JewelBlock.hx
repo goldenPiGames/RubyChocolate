@@ -4,7 +4,8 @@ class JewelBlock extends PuzzleBlock {
 	var parentSpec:JewelPuzzle;
 
 	override function loadSprites() {
-		loadGraphic("assets/images/Jewels.png", true, 64, 64);
+		loadGraphic("assets/images/Candies.png", true, 64, 64);
+		//loadGraphic("assets/images/Jewels.png", true, 64, 64);
 		animation.add("quid0", [0]);
 		animation.add("quid1", [1]);
 		animation.add("quid2", [2]);

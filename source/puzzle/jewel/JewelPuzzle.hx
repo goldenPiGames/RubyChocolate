@@ -17,8 +17,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 
 	public function new() {
 		super();
-		selector = new JewelSelector();
-		add(selector);
+		setNumMoves(50);
 		gottaDoMatches = false;
 		comboMatch = 0;
 	}
@@ -34,9 +33,12 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		numQuids = 6;
 		super.setupInitial();
 		setGridSize(8, 8);
-		shuffleButton = new JewelShuffleButton(300, gridToPixY(gridHeight), this);
+		setGridSizeAndPadding(64, 4);
+		shuffleButton = new JewelShuffleButton(300, getBottomY(), this);
 		add(shuffleButton);
 		fillWithNewBlocks();
+		selector = new JewelSelector(this);
+		add(selector);
 	}
 
 	@:deprecated
@@ -53,10 +55,12 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	public function maybeShuffle() {
 		if (!waitingForPiece) {
 			shuffle();
+			tookMove();
 		}
 	}
 
 	function shuffle() {
+		fallOffset = getBottomY();
 		clearAllBlocks();
 		fillWithNewBlocks();
 	}
@@ -116,11 +120,14 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 				for (blim in match) {
 					removeBlock(blim);
 				}
+				realanim.indicateMatch(match.length);
 			}
 			gottaDoMatches = true;
 			waitingForPiece = true;
 			applyGravity();
+			realanim.indicateCombo(comboMatch);
 		} else {
+			realanim.indicateMoveEnd();
 			endCombo();
 			gottaDoMatches = false;
 		}
@@ -176,10 +183,11 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 
 	function endCombo() {
 		if (comboMatch > 1) {
-			scorePoints((comboMatch - 1) * comboMatch * 100);
+			scorePoints((comboMatch - 1) * 300);
 		}
 		comboMatch = 0;
 		fillUpBlocks();
+		tookMove();
 	}
 
 	override function fillUpBlocks() {
@@ -201,11 +209,12 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 }
 
 class JewelSelector extends FlxSprite {
-	public function new() {
+	public function new(parent:JewelPuzzle) {
 		super();
 		loadGraphic("assets/images/JewelSelector.png", true, 64, 64);
 		animation.add("select", [0]);
-		setSize(64, 64);
+		setSize(parent.getScaleX(), parent.getScaleY());
+		offset.set(parent.getSpriteOffsetX(), parent.getSpriteOffsetY());
 		visible = false;
 	}
 

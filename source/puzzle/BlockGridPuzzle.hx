@@ -1,5 +1,6 @@
 package puzzle;
 
+import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import misc.PrxTypedGroup;
 
@@ -62,14 +63,14 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 	
 	function getBlock():BlockType {
 		var dasboxen = blocks.getFirstAvailable();
-		if (dasboxen != null) {
+		/*if (dasboxen != null) {
 			dasboxen.exists = true;
 			return dasboxen;
-		} else {
+		} else {*/
 			dasboxen = newBlock();
 			setBlockParent(dasboxen);
 			return dasboxen;
-		}
+		//}
 	}
 
 	function newBlock():BlockType {
