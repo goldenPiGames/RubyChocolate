@@ -2,16 +2,19 @@ package puzzle.jewel;
 
 class JewelBlock extends PuzzleBlock {
 	var parentSpec:JewelPuzzle;
+	public static inline var QUID_TRASH = -1;
 
 	override function loadSprites() {
-		loadGraphic("assets/images/Jewels.png", true, 64, 64);
-		animation.add("quid0", [0]);
-		animation.add("quid1", [1]);
-		animation.add("quid2", [2]);
-		animation.add("quid3", [3]);
-		animation.add("quid4", [4]);
-		animation.add("quid5", [5]);
-		animation.add("quid6", [6]);
+		loadGraphic("assets/images/Candies.png", true, 64, 64);
+		//loadGraphic("assets/images/Jewels.png", true, 64, 64);
+		animation.add("quid0", [1]);
+		animation.add("quid1", [2]);
+		animation.add("quid2", [3]);
+		animation.add("quid3", [4]);
+		animation.add("quid4", [5]);
+		animation.add("quid5", [6]);
+		animation.add("quid6", [7]);
+		animation.add("quid-1", [0]);
 	}
 
 	public function setParentSpec(theparent:JewelPuzzle) {
@@ -23,6 +26,8 @@ class JewelBlock extends PuzzleBlock {
 	}
 
 	public function couldMatchAt(hypx:Int, hypy:Int):Bool {
+		if (isTrash())
+			return false;
 		var left = parentSpec.isGridSameQuid(hypx - 1, hypy, this);
 		var right = parentSpec.isGridSameQuid(hypx + 1, hypy, this);
 		if ((left && right) || (left && parentSpec.isGridSameQuid(hypx - 2, hypy, this))
@@ -32,5 +37,9 @@ class JewelBlock extends PuzzleBlock {
 		var down = parentSpec.isGridSameQuid(hypx, hypy + 1, this);
 		return (up && down) || (up && parentSpec.isGridSameQuid(hypx, hypy - 2, this))
 				|| (down && parentSpec.isGridSameQuid(hypx, hypy + 2, this));
+	}
+
+	public inline function isTrash():Bool {
+		return quid == QUID_TRASH;
 	}
 }

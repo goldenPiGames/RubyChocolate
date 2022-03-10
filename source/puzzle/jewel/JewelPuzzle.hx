@@ -15,10 +15,14 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	var fallOffset:Float;
 	var shuffleButton:JewelShuffleButton;
 
+	public static inline var SCORE_3 = 100;
+	public static inline var SCORE_4 = 500;
+	public static inline var SCORE_5 = 1200;
+	public static inline var SCORE_6 = 5000;
+	public static inline var SCORE_COMBO = 300;
+
 	public function new() {
 		super();
-		selector = new JewelSelector();
-		add(selector);
 		gottaDoMatches = false;
 		comboMatch = 0;
 	}
@@ -31,12 +35,20 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	}
 
 	public override function setupInitial() {
+		setInitialCounters();
 		numQuids = 6;
 		super.setupInitial();
 		setGridSize(8, 8);
-		shuffleButton = new JewelShuffleButton(300, gridToPixY(gridHeight), this);
+		setGridSizeAndPadding(64, 4);
+		shuffleButton = new JewelShuffleButton(300, getBottomY(), this);
 		add(shuffleButton);
-		fillWithNewBlocks();
+		shuffle();
+		selector = new JewelSelector(this);
+		add(selector);
+	}
+
+	function setInitialCounters() {
+		setNumMoves(50);
 	}
 
 	@:deprecated
@@ -53,10 +65,12 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	public function maybeShuffle() {
 		if (!waitingForPiece) {
 			shuffle();
+			tookMove();
 		}
 	}
 
 	function shuffle() {
+		fallOffset = getBottomY();
 		clearAllBlocks();
 		fillWithNewBlocks();
 	}
@@ -76,7 +90,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 			streak = new Array<JewelBlock>();
 			for (j in 0...gridHeight) {
 				var disjuan:JewelBlock = getBlockByGrid(i, j);
-				if (disjuan == null || (streak.length > 0 && disjuan.quid != streak[0].quid)) {
+				if (disjuan == null || disjuan.isTrash() || (streak.length > 0 && disjuan.quid != streak[0].quid)) {
 					if (streak.length >= 3) {
 						matches.push(streak);
 					}
@@ -92,7 +106,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 			streak = new Array<JewelBlock>();
 			for (j in 0...gridWidth) {
 				var disjuan:JewelBlock = getBlockByGrid(j, i);
-				if (disjuan == null || (streak.length > 0 && disjuan.quid != streak[0].quid)) {
+				if (disjuan == null || disjuan.isTrash() || (streak.length > 0 && disjuan.quid != streak[0].quid)) {
 					if (streak.length >= 3) {
 						matches.push(streak);
 					}
@@ -116,11 +130,14 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 				for (blim in match) {
 					removeBlock(blim);
 				}
+				realanim.indicateMatch(match.length);
 			}
 			gottaDoMatches = true;
 			waitingForPiece = true;
 			applyGravity();
+			realanim.indicateCombo(comboMatch);
 		} else {
+			realanim.indicateMoveEnd();
 			endCombo();
 			gottaDoMatches = false;
 		}
@@ -176,10 +193,11 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 
 	function endCombo() {
 		if (comboMatch > 1) {
-			scorePoints((comboMatch - 1) * comboMatch * 100);
+			scorePoints((comboMatch - 1) * SCORE_COMBO);
 		}
 		comboMatch = 0;
 		fillUpBlocks();
+		tookMove();
 	}
 
 	override function fillUpBlocks() {
@@ -187,25 +205,26 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		super.fillUpBlocks();
 	}
 
-	override function fillInAt(a:Int, b:Int) {
-		var nupe = getBlock();
+	override function fillInAt(a:Int, b:Int):JewelBlock {
+		var nupe = super.fillInAt(a, b);
 		var lastQuid = random.int(0, numQuids-1);
 		nupe.setQuid((lastQuid + 1) % numQuids);
 		while (nupe.couldMatchAt(a, b) && nupe.quid != lastQuid) {
 			nupe.setQuid((nupe.quid + 1) % numQuids);
 		}
 		nupe.setQuid(nupe.quid);
-		insertIntoGrid(nupe, a, b);
 		nupe.animFallFromTop(fallOffset);
+		return nupe;
 	}
 }
 
 class JewelSelector extends FlxSprite {
-	public function new() {
+	public function new(parent:JewelPuzzle) {
 		super();
 		loadGraphic("assets/images/JewelSelector.png", true, 64, 64);
 		animation.add("select", [0]);
-		setSize(64, 64);
+		setSize(parent.getScaleX(), parent.getScaleY());
+		offset.set(parent.getSpriteOffsetX(), parent.getSpriteOffsetY());
 		visible = false;
 	}
 
@@ -223,10 +242,10 @@ class JewelSelector extends FlxSprite {
 abstract JewelPuzzleMatch(Array<JewelBlock>) from Array<JewelBlock> to Array<JewelBlock> {
 	public function getScore():Int {
 		switch (this.length) {
-			case 3: return 100;
-			case 4: return 500;
-			case 5: return 1000;
-			default: return this.length < 3 ? 0 : 5000;
+			case 3: return JewelPuzzle.SCORE_3;
+			case 4: return JewelPuzzle.SCORE_4;
+			case 5: return JewelPuzzle.SCORE_5;
+			default: return this.length < 3 ? 0 : JewelPuzzle.SCORE_6;
 		}
 	}
 

@@ -14,7 +14,7 @@ class PuzzleBlock extends FlxSprite {
 	public var parentGen:GridPuzzle;
 	public static var clickBuffer:Bool;
 	public var moving:Bool = false;
-	var speed:Float = 420;
+	var speed:Float = 590;
 	//var parent:BlockGridPuzzle<PuzzleBlock>;
 
 	public function new() {
@@ -61,6 +61,8 @@ class PuzzleBlock extends FlxSprite {
 
 	public function setParentGen(theparent:GridPuzzle) {
 		parentGen = theparent;
+		setSize(parentGen.getScaleX(), parentGen.getScaleY());
+		offset.set(parentGen.getSpriteOffsetX(), parentGen.getSpriteOffsetY());
 	}
 
 	public function moveGridPosition(a:Int, b:Int):Void {
@@ -97,11 +99,11 @@ class PuzzleBlock extends FlxSprite {
 
 	/** Called when this block is removed due to being matched. */
 	public function eliminate():Void {
-		exists = false;
+		destroy();
 	}
 
 	/** Called when this block is removed due to the board being shuffled. */
 	public function clear():Void {
-		exists = false;
+		destroy();
 	}
 }

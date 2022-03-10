@@ -114,9 +114,8 @@ class SamePuzzle extends BlockGridPuzzle<SameBlock> {
 	}
 
 	override function fillInAt(a:Int, b:Int) {
-		var nupe = getBlock();
+		var nupe = super.fillInAt(a, b);
 		nupe.setQuid(random.int(0, numQuids-1));
-		insertIntoGrid(nupe, a, b);
-		//nupe.animFallFromTop(fallOffset);
+		return nupe;
 	}
 }
