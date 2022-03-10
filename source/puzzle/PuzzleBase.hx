@@ -42,11 +42,18 @@ class PuzzleBase extends FlxTypedGroup<FlxBasic> {
 	}
 
 	function scorePoints(amount:Int, ?location:FlxPoint) {
-		score += amount;
-		scoreDisplay.setScore(score);
-		if (location == null)
-			location = scoreDisplay.defaultFloaterPosition();
+		setScore(score + amount);
+		if (location == null) {
+			if (scoreDisplay != null)
+				location = scoreDisplay.defaultFloaterPosition();
+		}
 		state.addScoreFloater(amount, location);
+	}
+
+	function setScore(amount:Int) {
+		score = amount;
+		if (scoreDisplay != null)
+			scoreDisplay.setScore(score);
 	}
 
 	public function setMovesDisplay(m:MovesDisplay) {
@@ -61,5 +68,8 @@ class PuzzleBase extends FlxTypedGroup<FlxBasic> {
 	function tookMove() {
 		movesLeft--;
 		movesDisplay.setLeft(movesLeft);
+		if (movesLeft <= 0) {
+			state.puzzleOver();
+		}
 	}
 }

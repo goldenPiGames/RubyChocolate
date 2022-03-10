@@ -58,6 +58,6 @@ class GridPuzzle extends PuzzleBase {
 	}
 
 	public inline function getBottomY():Float {
-		return gridToPixY(gridHeight) + 20;
+		return gridToPixY(gridHeight);
 	}
 }

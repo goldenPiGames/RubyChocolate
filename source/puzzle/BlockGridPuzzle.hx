@@ -131,8 +131,10 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 		}
 	}
 
-	function fillInAt(a:Int, b:Int) {
-		insertIntoGrid(getBlock(), a, b);
+	function fillInAt(a:Int, b:Int):BlockType {
+		var cock:BlockType = getBlock();
+		insertIntoGrid(cock, a, b);
+		return cock;
 	}
 
 	function getBottomEmpty():Int {

@@ -14,7 +14,7 @@ class PuzzleBlock extends FlxSprite {
 	public var parentGen:GridPuzzle;
 	public static var clickBuffer:Bool;
 	public var moving:Bool = false;
-	var speed:Float = 420;
+	var speed:Float = 590;
 	//var parent:BlockGridPuzzle<PuzzleBlock>;
 
 	public function new() {

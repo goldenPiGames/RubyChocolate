@@ -24,7 +24,7 @@ abstract class RealAnim extends FlxSprite {
 
 	public function indicateCombo(length:Int):Void {
 		if (length > 1)
-			animation.play("combo");
+			animation.play("combo", true);
 	}
 
 	public function indicateMoveEnd() {
