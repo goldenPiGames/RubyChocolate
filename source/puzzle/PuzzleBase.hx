@@ -21,6 +21,7 @@ class PuzzleBase extends FlxTypedGroup<FlxBasic> {
 	
 	public function new() {
 		super();
+		score = 0;
 		random = new FlxRandom();
 	}
 

@@ -1,5 +1,7 @@
 package states;
 
+import puzzle.jewel.JewelPuzzlePoison;
+import puzzle.jewel.JewelPuzzleTrash;
 import effects.ScoreFloater;
 import flixel.FlxG;
 import flixel.FlxState;
@@ -33,8 +35,8 @@ class PlayState extends PrxState {
 		switch (Passing.puzzle + Passing.level) {
 			case "jewel0": puzzle = new JewelTutorial(); realanim = new TestAnim(); PrxMusic.play("CoffeeLounge");
 			case "jewel1": puzzle = new JewelPuzzle(); realanim = new TestAnim(); PrxMusic.play("Rift");
-			case "jewel2": puzzle = new JewelPuzzle(); realanim = new TestAnim(); PrxMusic.play("AfternoonDaydream");
-			case "jewel3": puzzle = new JewelPuzzle(); realanim = new TestAnim();
+			case "jewel2": puzzle = new JewelPuzzleTrash(); realanim = new TestAnim(); PrxMusic.play("AfternoonDaydream");
+			case "jewel3": puzzle = new JewelPuzzlePoison(); realanim = new TestAnim();
 			case "same0": puzzle = new SamePuzzle(); realanim = new TestAnim();
 		}
 		puzzle.setState(this);

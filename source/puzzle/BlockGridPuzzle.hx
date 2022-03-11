@@ -53,6 +53,11 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 		blocksByGrid[getIndexByGrid(block.gridX, block.gridY)] = null;
 	}
 
+	function clearBlock(block:BlockType) {
+		block.clear();
+		blocksByGrid[getIndexByGrid(block.gridX, block.gridY)] = null;
+	}
+
 	function moveToGrid(block:BlockType, a:Int, b:Int) {
 		var prevdex:Int = getIndexByGrid(block.gridX, block.gridY);
 		if (blocksByGrid[prevdex] == block)
@@ -150,5 +155,12 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 	function clearAllBlocks():Void {
 		blocksByGrid = new Array<BlockType>();
 		blocks.forEachExists(b->b.clear());
+	}
+
+	function clearBottomRow():Void {
+		for (i in 0...gridWidth) {
+			clearBlock(getBlockByGrid(i, gridHeight-1));
+		}
+		applyGravity();
 	}
 }
