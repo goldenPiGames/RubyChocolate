@@ -10,11 +10,15 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	var selected:JewelBlock;
 	var selector:JewelSelector;
 	var gottaDoMatches:Bool;
+	var gottaFillUp:Bool;
+	var gottaClearBottom:Bool;
 	var comboMatch:Int;
 	var numQuids:Int;
 	var fallOffset:Float;
 	var shuffleButton:JewelShuffleButton;
+	var untilClearBottom:Int = CLEAR_BOTTOM_RATE;
 
+	public static inline var CLEAR_BOTTOM_RATE = 5;
 	public static inline var SCORE_3 = 100;
 	public static inline var SCORE_4 = 500;
 	public static inline var SCORE_5 = 1200;
@@ -24,13 +28,22 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	public function new() {
 		super();
 		gottaDoMatches = false;
+		gottaFillUp = false;
 		comboMatch = 0;
 	}
 
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
-		if (!waitingForPiece && gottaDoMatches) {
-			doMatches();
+		if (!waitingForPiece) {
+			if (gottaDoMatches) {
+				doMatches();
+			} else if (gottaClearBottom) {
+				clearBottomRow();
+				gottaClearBottom = false;
+			} else if (gottaFillUp) {
+				fillUpBlocks();
+				gottaFillUp = false;
+			}
 		}
 	}
 
@@ -197,6 +210,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		}
 		comboMatch = 0;
 		fillUpBlocks();
+		waitingForPiece = true;
 		tookMove();
 	}
 
@@ -207,7 +221,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 
 	override function fillInAt(a:Int, b:Int):JewelBlock {
 		var nupe = super.fillInAt(a, b);
-		var lastQuid = random.int(0, numQuids-1);
+		var lastQuid = getRandomQuid();
 		nupe.setQuid((lastQuid + 1) % numQuids);
 		while (nupe.couldMatchAt(a, b) && nupe.quid != lastQuid) {
 			nupe.setQuid((nupe.quid + 1) % numQuids);
@@ -215,6 +229,24 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		nupe.setQuid(nupe.quid);
 		nupe.animFallFromTop(fallOffset);
 		return nupe;
+	}
+
+	function getRandomQuid():Int {
+		return random.int(0, numQuids-1);
+	}
+
+	override function tookMove() {
+		super.tookMove();
+		untilClearBottom--;
+		if (untilClearBottom <= 0) {
+			gottaClearBottom = true;
+			untilClearBottom = CLEAR_BOTTOM_RATE;
+		}
+	}
+
+	override function clearBottomRow() {
+		super.clearBottomRow();
+		gottaFillUp = true;
 	}
 }
 
@@ -241,11 +273,15 @@ class JewelSelector extends FlxSprite {
 @:forward
 abstract JewelPuzzleMatch(Array<JewelBlock>) from Array<JewelBlock> to Array<JewelBlock> {
 	public function getScore():Int {
-		switch (this.length) {
-			case 3: return JewelPuzzle.SCORE_3;
-			case 4: return JewelPuzzle.SCORE_4;
-			case 5: return JewelPuzzle.SCORE_5;
-			default: return this.length < 3 ? 0 : JewelPuzzle.SCORE_6;
+		if (this[0].isPoison()) {
+			return JewelPuzzlePoison.SCORE_POISON;
+		} else {
+			switch (this.length) {
+				case 3: return JewelPuzzle.SCORE_3;
+				case 4: return JewelPuzzle.SCORE_4;
+				case 5: return JewelPuzzle.SCORE_5;
+				default: return this.length < 3 ? 0 : JewelPuzzle.SCORE_6;
+			}
 		}
 	}
 
