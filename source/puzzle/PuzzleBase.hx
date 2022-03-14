@@ -14,7 +14,8 @@ class PuzzleBase extends FlxTypedGroup<FlxBasic> {
 	var realanim:RealAnim;
 	var random:FlxRandom;
 	var waitingForPiece = false;
-	var score:Int;
+	public var score:Int;
+	public var scoreNeeded:Int;
 	var movesLeft:Int;
 	public var scoreDisplay:ScoreDisplay;
 	public var movesDisplay:MovesDisplay;
@@ -57,20 +58,40 @@ class PuzzleBase extends FlxTypedGroup<FlxBasic> {
 			scoreDisplay.setScore(score);
 	}
 
-	public function setMovesDisplay(m:MovesDisplay) {
+	public function setScoreDisplay(s:ScoreDisplay):Void {
+		scoreDisplay = s;
+		scoreDisplay.setNeeded(scoreNeeded);
+		scoreDisplay.setScore(score);
+	}
+
+	public function setMovesDisplay(m:MovesDisplay):Void {
 		movesDisplay = m;
-		movesDisplay.setLeft(movesLeft);
+		updateMovesDisplay();
 	}
 
 	function setNumMoves(macs:Int):Void {
 		movesLeft = macs;
+		updateMovesDisplay();
 	}
 
 	function tookMove() {
 		movesLeft--;
-		movesDisplay.setLeft(movesLeft);
+		updateMovesDisplay();
 		if (movesLeft <= 0) {
 			state.puzzleOver();
+		}
+	}
+
+	inline function updateMovesDisplay():Void {
+		if (movesDisplay != null)
+			movesDisplay.setLeft(movesLeft);
+	}
+
+	function setScoreNeeded(nyep:Int):Void {
+		scoreNeeded = nyep;
+		if (scoreDisplay != null) {
+			scoreDisplay.setNeeded(scoreNeeded);
+			scoreDisplay.setScore(score);
 		}
 	}
 }

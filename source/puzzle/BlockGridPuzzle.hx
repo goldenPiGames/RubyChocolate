@@ -102,12 +102,16 @@ class BlockGridPuzzle<BlockType:PuzzleBlock> extends GridPuzzle {
 			return a + b*gridWidth;
 	}
 
-	public inline function getBlockByGrid(a:Int, b:Int):BlockType {
-		var dex:Int = getIndexByGrid(a, b);
-		if (dex < 0)
+	public inline function getBlockByIndex(i:Int):BlockType {
+		if (i < 0 || i >= blocksByGrid.length)
 			return null;
 		else
-			return blocksByGrid[dex];
+			return blocksByGrid[i];
+		
+	}
+
+	public inline function getBlockByGrid(a:Int, b:Int):BlockType {
+		return getBlockByIndex(getIndexByGrid(a, b));
 	}
 
 	public inline function isGridSameQuid(a:Int, b:Int, q:BlockType):Bool {

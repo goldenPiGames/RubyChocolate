@@ -10,10 +10,10 @@ class JewelBlock extends PuzzleBlock {
 		//loadGraphic("assets/images/Jewels.png", true, 64, 64);
 		animation.add("quid0", [1]);
 		animation.add("quid1", [2]);
-		animation.add("quid2", [3]);
-		animation.add("quid3", [4]);
-		animation.add("quid4", [5]);
-		animation.add("quid5", [6]);
+		animation.add("quid5", [3]);
+		animation.add("quid2", [4]);
+		animation.add("quid3", [5]);
+		animation.add("quid4", [6]);
 		//animation.add("quid6", [7]);
 		animation.add("quid"+QUID_TRASH, [0]);
 		animation.add("quid"+QUID_POISON, [7]);

@@ -13,8 +13,8 @@ class GridPuzzle extends PuzzleBase {
 
 	public function new() {
 		super();
-		basketSprite = new FlxSprite();
-		add(basketSprite);
+		//basketSprite = new FlxSprite();
+		//add(basketSprite);
 	}
 
 	function setGridSize(wide:Int, tall:Int):Void {
@@ -27,7 +27,7 @@ class GridPuzzle extends PuzzleBase {
 		gridScale = size + padding;
 		gridOffsetX = 20;
 		gridOffsetY = 20;
-		gridPadOffset = padding / 2;
+		gridPadOffset = -padding / 2;
 		//basketSprite.loadGraphic("assets/images/JewelBasket.png");
 		//basketSprite.x = gridOffsetX - 32;
 		//basketSprite.y = gridOffsetY - 32;

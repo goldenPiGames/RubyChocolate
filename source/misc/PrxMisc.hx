@@ -7,6 +7,7 @@ class PrxMisc {
 	public static function ensureSetup() {
 		if (!setup) {
 			FlxG.console.registerClass(PrxMusic);
+			NGio.setup();
 			setup = true;
 		}
 	}

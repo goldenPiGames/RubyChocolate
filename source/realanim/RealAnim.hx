@@ -30,4 +30,8 @@ abstract class RealAnim extends FlxSprite {
 	public function indicateMoveEnd() {
 		
 	}
+
+	public function indicatePoison() {
+		
+	}
 }
