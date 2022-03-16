@@ -9,7 +9,7 @@ class DialogLine {
 	public var speaker:String;
 	public var portrait:FlxSprite;
 	public var music:String;
-	public var backdrop:FlxGraphicAsset;
+	public var backdrop:FlxSprite;
 
 	public function new(dats:DialogLineData) {
 		text = dats.text;
@@ -20,7 +20,9 @@ class DialogLine {
 		portrait = new FlxSprite(0, 0, "assets/images/portraits/"+portraitName+".png");
 		portrait.setPosition(FlxG.width-portrait.width-20, FlxG.height-portrait.height);
 		music = dats.music;
-		backdrop = dats.backdrop;
+		if (dats.backdrop != null) {
+			backdrop = new FlxSprite(0, 0, "assets/images/backdrops/"+dats.backdrop);
+		}
 	}
 }
 

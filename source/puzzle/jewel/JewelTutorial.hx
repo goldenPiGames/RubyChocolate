@@ -157,9 +157,7 @@ class JewelTutorial extends JewelPuzzle {
 	}
 
 	function startDialog() {
-		var sus:DialogSubState = new DialogSubState();
-		state.openSubState(sus);
-		sus.dialog.play(gottaStartDialog);
+		state.playCutscene(gottaStartDialog);
 		gottaStartDialog = null;
 	}
 

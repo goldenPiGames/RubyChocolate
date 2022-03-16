@@ -12,7 +12,8 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	var gottaDoMatches:Bool;
 	var gottaFillUp:Bool;
 	var gottaClearBottom:Bool;
-	var comboMatch:Int;
+	var comboNumMatches:Int;
+	var comboBiggestMatch:Int;
 	var numQuids:Int = 6;
 	var untilClearBottom:Int = CLEAR_BOTTOM_RATE;
 
@@ -35,7 +36,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		super();
 		gottaDoMatches = false;
 		gottaFillUp = false;
-		comboMatch = 0;
+		comboNumMatches = 0;
 	}
 
 	public override function update(elapsed:Float) {
@@ -161,28 +162,32 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 					removeBlock(blim);
 				}
 				if (match.isPoison()) {
-					realanim.indicatePoison();
 					doYouDoPoison = true;
 				} else {
-					comboMatch ++;
-					realanim.indicateMatch(match.length);
+					comboNumMatches ++;
 					if (match.length > biggestMatch)
 						biggestMatch = match.length;
+					if (match.length > comboBiggestMatch)
+						comboBiggestMatch = match.length;
 				}
 			}
 			if (doYouDoPoison) {
 				PrxMusic.playSound("poison");
+				realanim.indicatePoison();
 			} else if (biggestMatch >= 4) {
-				PrxMusic.playSound("match4");	
-			} else if (comboMatch > 1) {
+				PrxMusic.playSound("match4");
+				realanim.indicateMatch(biggestMatch);
+				cutinAgape.indicateGo();
+			} else if (comboNumMatches > 1) {
 				PrxMusic.playSound("combo");
+				realanim.indicateCombo(comboNumMatches);
+				cutinSophia.indicateGo();
 			} else {
 				PrxMusic.playSound("match3");
 			}
 			gottaDoMatches = true;
 			waitingForPiece = true;
 			applyGravity();
-			realanim.indicateCombo(comboMatch);
 		} else {
 			realanim.indicateMoveEnd();
 			endCombo();
@@ -239,10 +244,12 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	}
 
 	function endCombo() {
-		if (comboMatch > 1) {
-			scorePoints((comboMatch - 1) * SCORE_COMBO);
+		if (comboNumMatches > 1) {
+			scorePoints((comboNumMatches - 1) * SCORE_COMBO);
 		}
-		comboMatch = 0;
+		realanim.indicateComboEnd(comboNumMatches, comboBiggestMatch);
+		comboNumMatches = 0;
+		comboBiggestMatch = 0;
 		fillUpBlocks();
 		waitingForPiece = true;
 		tookMove();

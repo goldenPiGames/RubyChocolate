@@ -5,12 +5,15 @@ import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.text.FlxText;
+import misc.PrxMusic;
 
 class DialogHandler extends FlxTypedGroup<FlxBasic> {
 	var text:FlxText;
 	var header:FlxText;
 	var advbg:FlxSprite;
+	var backdrop:FlxSprite;
 	
 	var timeSinceAdvanced:Float = 0;
 	
@@ -26,6 +29,9 @@ class DialogHandler extends FlxTypedGroup<FlxBasic> {
 
 	public function new() {
 		super();
+		backdrop = new FlxSprite();
+		backdrop.visible = false;
+		add(backdrop);
 		advbg = new FlxSprite(0, ADV_Y, "assets/images/advbg.png");
 		add(advbg);
 		header = new FlxText(TEXT_X, ADV_Y+10, 300, "Speaker", 20);
@@ -59,8 +65,20 @@ class DialogHandler extends FlxTypedGroup<FlxBasic> {
 			add(currPortrait);
 			text.text = currLine.text;
 			header.text = currLine.speaker;
+			if (currLine.backdrop != null)
+				setBackdrop(currLine.backdrop);
+			if (currLine.music != null)
+				PrxMusic.play(currLine.music);
 		} else {
 			isFinished = true;
 		}
+	}
+
+	function setBackdrop(beep:FlxSprite) {
+		backdrop.loadGraphicFromSprite(beep);
+		backdrop.setGraphicSize(0, FlxG.height);
+		backdrop.updateHitbox();
+		backdrop.setPosition(0, 0);
+		backdrop.visible = true;
 	}
 }

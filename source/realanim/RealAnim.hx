@@ -1,5 +1,6 @@
 package realanim;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import states.PlayState;
 
@@ -9,6 +10,7 @@ abstract class RealAnim extends FlxSprite {
 	public function new(x:Float = 580, y:Float = 320) {
 		super(x, y);
 		createAnims();
+		setPosition(FlxG.width-width, FlxG.height-height);
 	}
 
 	abstract private function createAnims():Void;
@@ -33,5 +35,11 @@ abstract class RealAnim extends FlxSprite {
 
 	public function indicatePoison() {
 		
+	}
+
+	public function indicateComboEnd(comboMatch:Int, biggestMatch:Int) {
+		if (comboMatch <= 1 && biggestMatch < 4) {
+			animation.play("idle");
+		}
 	}
 }

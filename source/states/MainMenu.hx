@@ -21,14 +21,14 @@ class MainMenu extends PrxState {
 		back.setPosition(0, 0);
 		logo = new FlxSprite(0, 0, "assets/images/MainMenuLogo.png");
 		add(logo);
-		logo.setGraphicSize(0, Std.int(FlxG.height*420/1334));
+		logo.setGraphicSize(0, Std.int(FlxG.height*.43));
 		logo.updateHitbox();
 		logo.setPosition(FlxG.width-logo.width, 0);
 		add(new PrxButton(LEVEL_ALIGN-148, 30, "Tutorial", playJewels0));
 		add(new PrxButton(LEVEL_ALIGN-197, 150, "GamingVsAnime", playJewels1));
 		add(new PrxButton(LEVEL_ALIGN-117, 290, "OldPeople", playJewels2));
 		add(new PrxButton(LEVEL_ALIGN-200, 470, "Revolution", playJewels3));
-		add(new PrxButton(FlxG.width-200, FlxG.height/2-50, "Credits", seeCredits));
+		add(new PrxButton(FlxG.width-200, FlxG.height*.45, "Credits", seeCredits));
 		PrxMusic.play("Decisions");
 		//add(new PrxButton(100, 400, "Same", playSame));
 	}
@@ -36,6 +36,7 @@ class MainMenu extends PrxState {
 	function playJewels0() {
 		Passing.puzzle = "jewel";
 		Passing.level = 0;
+		Passing.scene = "LoveAndLogic";
 		FlxG.switchState(new PlayState());
 	}
 	

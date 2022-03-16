@@ -4,6 +4,7 @@ import flixel.FlxBasic;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRandom;
+import gameui.GodCutin;
 import realanim.RealAnim;
 import states.PlayState;
 import ui.MovesDisplay;
@@ -19,6 +20,8 @@ class PuzzleBase extends FlxTypedGroup<FlxBasic> {
 	var movesLeft:Int;
 	public var scoreDisplay:ScoreDisplay;
 	public var movesDisplay:MovesDisplay;
+	var cutinAgape:GodCutin;
+	var cutinSophia:GodCutin;
 	
 	public function new() {
 		super();
@@ -93,5 +96,10 @@ class PuzzleBase extends FlxTypedGroup<FlxBasic> {
 			scoreDisplay.setNeeded(scoreNeeded);
 			scoreDisplay.setScore(score);
 		}
+	}
+
+	public function setCutins(agape:GodCutin, sophia:GodCutin) {
+		cutinAgape = agape;
+		cutinSophia = sophia;
 	}
 }

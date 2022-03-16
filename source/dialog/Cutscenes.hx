@@ -4,12 +4,12 @@ import dialog.DialogLine.DialogLineData;
 
 class Cutscenes {
 	public static var GAMERVSWEEB_INTRO:CutsceneData = [
-		{speaker:"Ellen",text:"i liek anime :3",music:"Rift"},
+		{speaker:"Ellen",text:"i liek anime :3",music:"Rift",backdrop:"FrikDonalds.png"},
 		{speaker:"Keith",text:"GAMERS DON'T DIE THEY RESPAWN"},
 		{speaker:"Ellen",text:"miku miku miiiii :3"},
 		{speaker:"Keith",text:"YOU'D BETTER NOT MESS WITH ME I'M CLOSE TO LEVELING UP AND YOU LOOK LIKE JUST ENOUGH XP"},
 		{speaker:"Agape",portrait:"AgapeO",text:"Oh, how cute! I'm sure they'll get together great with our help."},
-		{speaker:"Sophia",portrait:"SophiaD",text:"Oh, how cute! I'm sure they'll get together great with our help."},
+		{speaker:"Sophia",portrait:"SophiaD",text:"Of course."},
 	];
 	public static var GAMERVSWEEB_OUTRO_GOOD:CutsceneData = [
 		{speaker:"Keith",text:"Do you believe that love can bloom on the battlefield?"},
@@ -22,8 +22,8 @@ class Cutscenes {
 		{speaker:"Keith",text:"*does default dance*"},
 		{speaker:"Ellen",portrait:"Nothing",text:"*dies instantly*"},
 	];
-	public static var OLDPEOPLE_INTRO:CutsceneData = [
-		{speaker:"Edna",text:"What a beautiful way to start the day! The pink sky and the faint rays of the sun makes me think of our youth.",backdrop:"PinkSky",music:"AfternoonDaydream"},
+	public static var OLDPEOPLE_INTRO:CutsceneData = [//https://pxhere.com/en/photo/1631139
+		{speaker:"Edna",text:"What a beautiful way to start the day! The pink sky and the faint rays of the sun makes me think of our youth.",backdrop:"PinkSky.jpg",music:"AfternoonDaydream"},
 		{speaker:"Phil",text:"Those times when we woke up next to each other, embracing the scents of our bare skins, that were yet untouched by the wrinkle of time?"},
 		{speaker:"Edna",text:"Yes. I really miss those times."},
 		{speaker:"Phil",text:"I also wish we could just turn back to those times and relive them."},

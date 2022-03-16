@@ -8,11 +8,19 @@ import ui.PrxButton;
 
 class CreditsMenu extends FlxState {
 	static inline var COLLAB_CREDIT_TEXT = "Collaborators:
-goldenPiGames: programming, gameplay, organization
-SachikoFox: game icons
+goldenPiGames: programming, gameplay, writing
+SachikoFox: game pieces
 DigitalSkrub: buttons
-Kiyo: main menu background
-thestupidmeddy: writing";
+Kiyo: main menu, backgrounds. animations
+thestupidmeddy: writing
+KOLANI: scenario, animations, backgrounds, logo
+Chosm: character design
+Devoidgazer: backgrounds
+FletcherEPS: Agape/Sophia portraits
+JoshikoF: human portraits
+ProsciuttoMan: scenario, character design, backgrounds characters
+Funster: thumbnail
+Pod: thumbnail";
 	
 
 	override function create() {
