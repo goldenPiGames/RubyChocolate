@@ -3,33 +3,40 @@ package puzzle.jewel;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
-import haxe.display.Display.Package;
+import misc.PrxMusic;
+import puzzle.jewel.JewelShuffleButton.JewelDropButton;
+import ui.PrxButton;
 
 class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 
-	var selected:JewelBlock;
-	var selector:JewelSelector;
 	var gottaDoMatches:Bool;
 	var gottaFillUp:Bool;
 	var gottaClearBottom:Bool;
-	var comboMatch:Int;
-	var numQuids:Int;
-	var fallOffset:Float;
-	var shuffleButton:JewelShuffleButton;
+	var comboNumMatches:Int;
+	var comboBiggestMatch:Int;
+	var numQuids:Int = 6;
 	var untilClearBottom:Int = CLEAR_BOTTOM_RATE;
 
+	var selected:JewelBlock;
+	var selector:JewelSelector;
+	var fallOffset:Float;
+	var shuffleButton:PrxButton;
+	var dropCounter:DropCounter;
+
+	public static inline var NUM_MOVES = 40;
 	public static inline var CLEAR_BOTTOM_RATE = 5;
 	public static inline var SCORE_3 = 100;
 	public static inline var SCORE_4 = 500;
 	public static inline var SCORE_5 = 1200;
 	public static inline var SCORE_6 = 5000;
 	public static inline var SCORE_COMBO = 300;
+	public static inline var SCORE_NEEDED = 13000;
 
 	public function new() {
 		super();
 		gottaDoMatches = false;
 		gottaFillUp = false;
-		comboMatch = 0;
+		comboNumMatches = 0;
 	}
 
 	public override function update(elapsed:Float) {
@@ -48,20 +55,23 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	}
 
 	public override function setupInitial() {
-		setInitialCounters();
-		numQuids = 6;
+		setInitialValues();
 		super.setupInitial();
 		setGridSize(8, 8);
 		setGridSizeAndPadding(64, 4);
-		shuffleButton = new JewelShuffleButton(300, getBottomY(), this);
+		shuffleButton = new JewelDropButton(300, getBottomY(), this);
 		add(shuffleButton);
+		dropCounter = new DropCounter(20, getBottomY());
+		add(dropCounter);
 		shuffle();
 		selector = new JewelSelector(this);
 		add(selector);
 	}
 
-	function setInitialCounters() {
-		setNumMoves(50);
+	function setInitialValues() {
+		setNumMoves(NUM_MOVES);
+		numQuids = 6;
+		setScoreNeeded(SCORE_NEEDED);
 	}
 
 	@:deprecated
@@ -86,6 +96,13 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 		fallOffset = getBottomY();
 		clearAllBlocks();
 		fillWithNewBlocks();
+	}
+
+	public function maybeDrop() {
+		if (!waitingForPiece) {
+			clearBottomRow();
+			tookMove();
+		}
 	}
 
 	override function newBlock() {
@@ -137,18 +154,40 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	function doMatches():Void {
 		var matches:Array<JewelPuzzleMatch> = getAllMatches();
 		if (matches.length > 0) {
+			var biggestMatch = 0;
+			var doYouDoPoison = false;
 			for (match in matches) {
 				scorePoints(match.getScore(), match.getLocation());
-				comboMatch += 1;
 				for (blim in match) {
 					removeBlock(blim);
 				}
-				realanim.indicateMatch(match.length);
+				if (match.isPoison()) {
+					doYouDoPoison = true;
+				} else {
+					comboNumMatches ++;
+					if (match.length > biggestMatch)
+						biggestMatch = match.length;
+					if (match.length > comboBiggestMatch)
+						comboBiggestMatch = match.length;
+				}
+			}
+			if (doYouDoPoison) {
+				PrxMusic.playSound("poison");
+				realanim.indicatePoison();
+			} else if (biggestMatch >= 4) {
+				PrxMusic.playSound("match4");
+				realanim.indicateMatch(biggestMatch);
+				cutinAgape.indicateGo();
+			} else if (comboNumMatches > 1) {
+				PrxMusic.playSound("combo");
+				realanim.indicateCombo(comboNumMatches);
+				cutinSophia.indicateGo();
+			} else {
+				PrxMusic.playSound("match3");
 			}
 			gottaDoMatches = true;
 			waitingForPiece = true;
 			applyGravity();
-			realanim.indicateCombo(comboMatch);
 		} else {
 			realanim.indicateMoveEnd();
 			endCombo();
@@ -205,10 +244,12 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	}
 
 	function endCombo() {
-		if (comboMatch > 1) {
-			scorePoints((comboMatch - 1) * SCORE_COMBO);
+		if (comboNumMatches > 1) {
+			scorePoints((comboNumMatches - 1) * SCORE_COMBO);
 		}
-		comboMatch = 0;
+		realanim.indicateComboEnd(comboNumMatches, comboBiggestMatch);
+		comboNumMatches = 0;
+		comboBiggestMatch = 0;
 		fillUpBlocks();
 		waitingForPiece = true;
 		tookMove();
@@ -221,9 +262,8 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 
 	override function fillInAt(a:Int, b:Int):JewelBlock {
 		var nupe = super.fillInAt(a, b);
-		var lastQuid = getRandomQuid();
-		nupe.setQuid((lastQuid + 1) % numQuids);
-		while (nupe.couldMatchAt(a, b) && nupe.quid != lastQuid) {
+		nupe.setQuid(getRandomQuid());
+		while (nupe.couldMatchAt(a, b)) {//don't need a failsafe here
 			nupe.setQuid((nupe.quid + 1) % numQuids);
 		}
 		nupe.setQuid(nupe.quid);
@@ -238,7 +278,9 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	override function tookMove() {
 		super.tookMove();
 		untilClearBottom--;
+		dropCounter.playMove(untilClearBottom);
 		if (untilClearBottom <= 0) {
+			dropCounter.playDrop();
 			gottaClearBottom = true;
 			untilClearBottom = CLEAR_BOTTOM_RATE;
 		}
@@ -247,6 +289,7 @@ class JewelPuzzle extends BlockGridPuzzle<JewelBlock> {
 	override function clearBottomRow() {
 		super.clearBottomRow();
 		gottaFillUp = true;
+		PrxMusic.playSound("drop");
 	}
 }
 
@@ -273,7 +316,7 @@ class JewelSelector extends FlxSprite {
 @:forward
 abstract JewelPuzzleMatch(Array<JewelBlock>) from Array<JewelBlock> to Array<JewelBlock> {
 	public function getScore():Int {
-		if (this[0].isPoison()) {
+		if (isPoison()) {
 			return JewelPuzzlePoison.SCORE_POISON;
 		} else {
 			switch (this.length) {
@@ -293,5 +336,9 @@ abstract JewelPuzzleMatch(Array<JewelBlock>) from Array<JewelBlock> to Array<Jew
 			y += lem.y;
 		}
 		return new FlxPoint(x/this.length+this[0].width/2, y/this.length+this[0].height/2);
+	}
+
+	public inline function isPoison():Bool {
+		return this[0].isPoison();
 	}
 }

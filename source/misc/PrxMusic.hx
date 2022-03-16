@@ -1,12 +1,28 @@
 package misc;
 
 import flixel.FlxG;
+import flixel.system.FlxSound;
 
 class PrxMusic {
 	static var currID:String;
 	static var currData:PrxMusicData;
+	public static inline var MUSIC_CREDIT_TEXT = "Music used:
+Decisions - Eric Matyas
+Coffee Lounge - PeriTune
+Rift - HOJL, Hyenaedon, Predator, Hypervolt
+Afternoon Daydream - TebyTheCat
+Dramatic 5 - PeriTune
+
+Sound Effects: mixkit";
 	
 	static final MUSIC_DATA:Map<String, PrxMusicData> = [
+		"Decisions"=>{
+			title:"Decisions",
+			author:"Eric Matyas",
+			filename:"Decisions.mp3",
+			//loopStart:0,
+			//loopEnd:199,
+		},
 		"Rift"=>{
 			title:"-Rift-",
 			author:"Predator, HOJL, Hyenaedon, Hypervolt",
@@ -26,12 +42,15 @@ class PrxMusic {
 			author:"PeriTune",
 			filename:"CoffeeLounge.ogg",
 		},
+		"Dramatic5"=>{
+			title:"Dramatic 5",
+			author:"PeriTune",
+			filename:"Dramatic5.ogg",
+		},
 	];
 
 	public static function play(id) {
 		var dats:PrxMusicData = MUSIC_DATA.get(id);
-		trace(id);
-		trace(dats);
 		if (dats != null) {
 			currID = id;
 			FlxG.sound.playMusic("assets/music/"+dats.filename, 1, true);
@@ -49,6 +68,10 @@ class PrxMusic {
 
 	public static function getCurrDisplay():String {
 		return getDisplayFor(currData);
+	}
+
+	public inline static function playSound(nom:String):FlxSound {
+		return FlxG.sound.play("assets/sounds/"+nom+".wav");
 	}
 }
 
